@@ -1,5 +1,30 @@
-module.exports = (req, res, next) => {
-  next();
+const jwt = require("jsonwebtoken")
+module.exports = async (req, res, next) => {
+  //next();
+  
+  try{
+    const token = req.cookies.token
+    if (!token) {
+      return res.status(401).json({
+        message: "token required",
+      })
+    }
+    
+    jwt.verify(token, process.env.JWT_SECRET || "sshh", (err, decoded) => {
+      if (err.name == 'TokenExpiredError') {
+        return res.status(401).json({
+          message: "token invalid",
+        })
+      } 
+
+      // make the token's payload available to other middleware functions
+      req.token = decoded
+
+      next()
+    })
+  }catch(err){
+    next(err)
+  }
   /*
     IMPLEMENT
 
