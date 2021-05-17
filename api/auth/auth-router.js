@@ -88,7 +88,7 @@ router.post('/login', async (req, res, next) => {
 		}, process.env.JWT_SECRET || "sshh")
 
     res.cookie("token", token)
-    res.json({
+    res.status(201).json({
       message: `Welcome ${user.username}!`,
       token: token
     })
